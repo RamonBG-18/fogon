@@ -1,0 +1,161 @@
+/* Configuraciones generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f8f5f2; /* Color hueso muy claro */
+    color: #333;
+}
+
+/* Encabezado principal (El Fogón) */
+.hero {
+    background-color: #1a1a1a;
+    background-image: linear-gradient(to right, #1a1a1a, #8b0000); /* Degradado oscuro a rojo fuego */
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom: 5px solid #ff4500;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #ffd700; /* Amarillo fuego */
+}
+
+/* Contenedor central */
+.contenedor {
+    max-width: 1000px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.titulo-seccion {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #8b0000;
+}
+
+/* Cuadrícula de paquetes usando CSS Grid */
+.grid-paquetes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* Tarjetas de los productos */
+.tarjeta {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+    border-top: 4px solid #ff4500;
+}
+
+.tarjeta:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.tarjeta h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.tarjeta .descripcion {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    min-height: 80px;
+}
+
+.tarjeta .precio {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #8b0000;
+    margin-bottom: 1.5rem;
+}
+
+/* Botón de pedido */
+.btn-pedir {
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-pedir:hover {
+    background-color: #cc3700;
+}
+
+.btn-secundario {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #8b0000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.pedido-formulario {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pedido-formulario form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    text-align: left;
+}
+
+.pedido-formulario label {
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.pedido-formulario input,
+.pedido-formulario select {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.mensaje {
+    background-color: #fff3e0;
+    border-left: 4px solid #ff4500;
+    padding: 0.8rem 1rem;
+    margin: 1rem 0;
+    border-radius: 5px;
+}
+
+/* Pie de página */
+footer {
+    background-color: #1a1a1a;
+    color: #aaa;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 4rem;
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fogón | La mejor carne asada</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    
+    <header class="hero">
+        <div class="hero-contenido">
+            <h1>Fogón 🔥</h1>
+            <p>El mejor corte directo a tu parrilla.</p>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <h2 class="titulo-seccion">Paquetes Listos para Asar</h2>
+        
+        <div class="grid-paquetes">
+            {% for paquete in paquetes %}
+            <div class="tarjeta">
+                <h3>{{ paquete.nombre }}</h3>
+                <p class="descripcion">{{ paquete.descripcion }}</p>
+                <p class="precio">{{ paquete.precio }}</p>
+                <a href="{{ url_for('pedido', paquete_id=paquete.id) }}" class="btn-pedir">Hacer Pedido</a>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Fogón. Prende el carbón, nosotros ponemos la carne.</p>
+    </footer>
+
+</body>
+</html>

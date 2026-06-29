@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fogón | Hacer Pedido</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-contenido">
+            <h1>Fogón 🔥</h1>
+            <p>Tu pedido está a punto de salir a la parrilla.</p>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <h2 class="titulo-seccion">Completa tu pedido</h2>
+
+        <div class="pedido-formulario">
+            {% if mensaje %}
+            <div class="mensaje">{{ mensaje }}</div>
+            {% endif %}
+
+            <form method="post">
+                <label for="nombre">Tu nombre</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej. Ana López" required>
+
+                <label for="metodo_pago">Método de pago</label>
+                <select id="metodo_pago" name="metodo_pago" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                </select>
+
+                <button class="btn-pedir" type="submit">Confirmar Pedido</button>
+            </form>
+
+            <a class="btn-secundario" href="{{ url_for('inicio') }}">← Volver al menú</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Fogón. Prende el carbón, nosotros ponemos la carne.</p>
+    </footer>
+</body>
+</html>
