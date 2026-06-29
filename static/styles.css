@@ -151,6 +151,29 @@ body {
     border-radius: 5px;
 }
 
+.pedido-card {
+    text-align: left;
+}
+
+.small {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.btn-eliminar {
+    background-color: #eee;
+    color: #8b0000;
+    border: 1px solid #f2c0b0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 0.6rem;
+}
+
+.btn-eliminar:hover {
+    background-color: #ffecec;
+}
+
 /* Pie de página */
 footer {
     background-color: #1a1a1a;

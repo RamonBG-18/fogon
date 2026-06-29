@@ -1,4 +1,8 @@
 from flask import Flask, redirect, render_template, request, url_for
+from datetime import datetime
+import json
+from uuid import uuid4
+from pathlib import Path
 
 app = Flask(__name__)
 
@@ -24,6 +28,26 @@ PAQUETES_CARNE = [
 ]
 
 
+DATA_FILE = Path(__file__).parent / 'pedidos.json'
+
+
+def load_pedidos():
+    if DATA_FILE.exists():
+        try:
+            return json.loads(DATA_FILE.read_text(encoding='utf-8'))
+        except Exception:
+            return []
+    return []
+
+
+def save_pedidos(pedidos):
+    DATA_FILE.write_text(json.dumps(pedidos, ensure_ascii=False, indent=2), encoding='utf-8')
+
+
+# Almacenamiento en memoria de pedidos confirmados (se carga desde `pedidos.json`).
+PEDIDOS_CONFIRMADOS = load_pedidos()
+
+
 @app.route('/')
 def inicio():
     return render_template('index.html', paquetes=PAQUETES_CARNE)
@@ -41,11 +65,41 @@ def pedido(paquete_id):
         metodo_pago = request.form.get('metodo_pago', '').strip()
 
         if nombre and metodo_pago:
-            mensaje = f"Pedido confirmado para {nombre}. Método de pago: {metodo_pago}."
+            # Guardamos el pedido en memoria y en disco
+            pedido = {
+                'id': uuid4().hex,
+                'paquete_id': paquete['id'],
+                'paquete_nombre': paquete['nombre'],
+                'cliente': nombre,
+                'metodo_pago': metodo_pago,
+                'timestamp': datetime.utcnow().isoformat() + 'Z',
+            }
+            PEDIDOS_CONFIRMADOS.append(pedido)
+            save_pedidos(PEDIDOS_CONFIRMADOS)
+            return redirect(url_for('ver_pedidos'))
         else:
             mensaje = "Por favor completa tu nombre y método de pago."
 
     return render_template('pedido.html', paquete=paquete, mensaje=mensaje)
+
+
+@app.route('/pedidos')
+def ver_pedidos():
+    # Mostramos los pedidos confirmados (más recientes arriba)
+    pedidos = list(reversed(PEDIDOS_CONFIRMADOS))
+    return render_template('pedidos.html', pedidos=pedidos)
+
+
+
+@app.route('/pedidos/eliminar/<pedido_id>', methods=['POST'])
+def eliminar_pedido(pedido_id):
+    global PEDIDOS_CONFIRMADOS
+    antes = len(PEDIDOS_CONFIRMADOS)
+    PEDIDOS_CONFIRMADOS = [p for p in PEDIDOS_CONFIRMADOS if p.get('id') != pedido_id]
+    if len(PEDIDOS_CONFIRMADOS) != antes:
+        save_pedidos(PEDIDOS_CONFIRMADOS)
+    return redirect(url_for('ver_pedidos'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

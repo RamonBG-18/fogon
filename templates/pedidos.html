@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fogón | Pedidos Confirmados</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-contenido">
+            <h1>Fogón 🔥</h1>
+            <p>Pedidos confirmados</p>
+            <a class="btn-secundario" href="{{ url_for('inicio') }}">← Volver al menú</a>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <h2 class="titulo-seccion">Pedidos recientes</h2>
+
+        {% if pedidos %}
+        <div class="grid-paquetes">
+            {% for p in pedidos %}
+            <div class="tarjeta pedido-card">
+                <h3>{{ p.paquete_nombre }}</h3>
+                <p><strong>Cliente:</strong> {{ p.cliente }}</p>
+                <p><strong>Pago:</strong> {{ p.metodo_pago }}</p>
+                <p class="descripcion small">Ordenada: {{ p.timestamp }}</p>
+                <form method="post" action="{{ url_for('eliminar_pedido', pedido_id=p.id) }}" onsubmit="return confirm('Eliminar pedido de {{ p.cliente }}?');">
+                    <button type="submit" class="btn-eliminar">Eliminar</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No hay pedidos confirmados todavía.</p>
+        {% endif %}
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Fogón. Prende el carbón, nosotros ponemos la carne.</p>
+    </footer>
+</body>
+</html>
