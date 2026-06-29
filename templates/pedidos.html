@@ -17,6 +17,18 @@
 
     <main class="contenedor">
         <h2 class="titulo-seccion">Pedidos recientes</h2>
+        <div class="search-row">
+            <form method="get" action="{{ url_for('ver_pedidos') }}" class="search-form">
+                <input type="search" name="q" placeholder="Buscar por cliente, paquete o método" value="{{ q }}">
+                <input type="date" name="date_from" value="{{ date_from }}" title="Fecha desde">
+                <input type="date" name="date_to" value="{{ date_to }}" title="Fecha hasta">
+                <select name="order">
+                    <option value="recent" {% if order=='recent' %}selected{% endif %}>Más recientes</option>
+                    <option value="oldest" {% if order=='oldest' %}selected{% endif %}>Más antiguas</option>
+                </select>
+                <button type="submit" class="btn-pedir">Buscar</button>
+            </form>
+        </div>
 
         {% if pedidos %}
         <div class="grid-paquetes">
@@ -33,7 +45,11 @@
             {% endfor %}
         </div>
         {% else %}
+        {% if q %}
+        <p>No se encontraron pedidos para "{{ q }}".</p>
+        {% else %}
         <p>No hay pedidos confirmados todavía.</p>
+        {% endif %}
         {% endif %}
 
     </main>
