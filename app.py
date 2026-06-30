@@ -91,9 +91,61 @@ def pedido(paquete_id):
 
 @app.route('/pedidos')
 def ver_pedidos():
-    # Mostramos los pedidos confirmados (más recientes arriba)
-    pedidos = list(reversed(PEDIDOS_CONFIRMADOS))
-    return render_template('pedidos.html', pedidos=pedidos)
+    # Mostramos los pedidos confirmados con filtros y orden.
+    q = request.args.get('q', '').strip()
+    date_from = request.args.get('date_from', '').strip()
+    date_to = request.args.get('date_to', '').strip()
+    order = request.args.get('order', 'recent')
+
+    def parse_iso(ts):
+        if not ts:
+            return None
+        try:
+            return datetime.fromisoformat(ts.replace('Z', ''))
+        except Exception:
+            return None
+
+    # Lee desde disco para que los filtros siempre usen los datos persistidos
+    items = load_pedidos()
+
+    if q:
+        ql = q.lower()
+        items = [p for p in items if ql in p.get('cliente', '').lower() or ql in p.get('paquete_nombre', '').lower() or ql in p.get('metodo_pago', '').lower()]
+
+    if date_from or date_to:
+        df = None
+        dt = None
+        try:
+            if date_from:
+                df = datetime.fromisoformat(date_from).date()
+            if date_to:
+                dt = datetime.fromisoformat(date_to).date()
+        except Exception:
+            df = dt = None
+
+        if df or dt:
+            filtered = []
+            for p in items:
+                ts = parse_iso(p.get('timestamp'))
+                if ts is None:
+                    continue
+                d = ts.date()
+                if df and d < df:
+                    continue
+                if dt and d > dt:
+                    continue
+                filtered.append(p)
+            items = filtered
+
+    # Ordenar por timestamp
+    def key_ts(p):
+        ts = parse_iso(p.get('timestamp'))
+        return ts or datetime.min
+
+    reverse = True if order != 'oldest' else False
+    pedidos = sorted(items, key=key_ts, reverse=reverse)
+
+    return render_template('pedidos.html', pedidos=pedidos, q=q, date_from=date_from, date_to=date_to, order=order)
 
 
 
