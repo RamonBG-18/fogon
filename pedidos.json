@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "a4c643b1ee804b469078e6b741c3dd02",
+    "paquete_id": 1,
+    "paquete_nombre": "Paquete Familiar",
+    "cliente": "ramon Barron",
+    "metodo_pago": "Efectivo",
+    "timestamp": "2026-06-29T05:20:52.923285Z"
+  }
+]

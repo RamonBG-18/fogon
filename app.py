@@ -25,6 +25,12 @@ PAQUETES_CARNE = [
         "descripcion": "2kg de Arrachera marinada, queso menonita para fundir y guacamole.",
         "precio": "$750 MXN",
     },
+    {
+        "id": 4,
+        "nombre": "Especial Asado",
+        "descripcion": "1kg de carne con dos salchichas para asar, dos papas asadas y dos cebollas.",
+        "precio": "$680 MXN",
+    },
 ]
 
 
