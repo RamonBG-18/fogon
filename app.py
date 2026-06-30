@@ -31,6 +31,12 @@ PAQUETES_CARNE = [
         "descripcion": "1kg de carne con dos salchichas para asar, dos papas asadas y dos cebollas.",
         "precio": "$680 MXN",
     },
+    {
+        "id": 5,
+        "nombre": "Parrillada Express",
+        "descripcion": "1.2kg de carne mixta con chorizo, dos nopales asados y salsa casera.",
+        "precio": "$720 MXN",
+    },
 ]
 
 
