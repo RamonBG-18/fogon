@@ -1,10 +1,13 @@
 [
   {
-    "id": "a4c643b1ee804b469078e6b741c3dd02",
-    "paquete_id": 1,
-    "paquete_nombre": "Paquete Familiar",
-    "cliente": "ramon Barron",
+    "id": "20dac8e0644c4e8db8babf267c5083d6",
+    "paquete_id": 2,
+    "paquete_nombre": "1kg Pa'que Amarre",
+    "cliente": "carlos",
     "metodo_pago": "Efectivo",
-    "timestamp": "2026-06-29T05:20:52.923285Z"
+    "telefono": "33333",
+    "domicilio": "eaffsdf",
+    "agregar_bebida": true,
+    "timestamp": "2026-07-01T05:14:43.109821Z"
   }
 ]

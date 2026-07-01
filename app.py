@@ -1,44 +1,50 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 from datetime import datetime
 import json
 from uuid import uuid4
 from pathlib import Path
 
 app = Flask(__name__)
+app.secret_key = 'fogon-secret-key'
 
 PAQUETES_CARNE = [
     {
         "id": 1,
-        "nombre": "Paquete Familiar",
-        "descripcion": "3kg de Sirloin, 1kg de salchicha para asar, tortillas, cebollitas y salsa.",
-        "precio": "$850 MXN",
+        "nombre": "Pa' que no te Atragantes",
+        "descripcion": "1kg de carne asada, 2 salchichas asadas, 2 cebollas asadas, 2 papas asadas con mantequilla, 1 refresco (2.5 lt a elegir), tortillas y salsas a elegir.",
+        "precio": "$440 MXN",
     },
     {
         "id": 2,
-        "nombre": "Combo Compadres",
-        "descripcion": "2kg de Ribeye calidad Angus, 1 bolsa de carbón, aguacates y tortillas de harina.",
-        "precio": "$1,200 MXN",
+        "nombre": "1kg Pa'que Amarre",
+        "descripcion": "1kg de carne asada, 2 salchichas asadas, 2 cebollas asadas, 2 papas asadas con mantequilla, tortillas y salsas a elegir.",
+        "precio": "$380 MXN",
     },
     {
         "id": 3,
-        "nombre": "Clásico Norteño",
-        "descripcion": "2kg de Arrachera marinada, queso menonita para fundir y guacamole.",
-        "precio": "$750 MXN",
+        "nombre": "1/2kg Pal' Antojo",
+        "descripcion": "1/2kg de carne asada, 2 salchichas asadas, 2 cebollas asadas, 2 papas asadas con mantequilla, tortillas y salsas a elegir.",
+        "precio": "$200 MXN",
     },
     {
         "id": 4,
-        "nombre": "Especial Asado",
-        "descripcion": "1kg de carne con dos salchichas para asar, dos papas asadas y dos cebollas.",
-        "precio": "$680 MXN",
+        "nombre": "Una Bien Servida",
+        "descripcion": "4 tacos de tortilla amarilla grande, 1 papa o salchicha asada (a elegir), 1 cebolla asada, preperados a su gusto.",
+        "precio": "$100 MXN",
     },
     {
         "id": 5,
-        "nombre": "Parrillada Express",
-        "descripcion": "1.2kg de carne mixta con chorizo, dos nopales asados y salsa casera.",
-        "precio": "$720 MXN",
+        "nombre": "PAPON ASADO",
+        "descripcion": "1 papa asada grande con mantequilla, queso y carne asada.",
+        "precio": "65 MXN",
+    },
+    {
+        "id": 6,
+        "nombre": "PA TOMAR",
+        "descripcion": "1 bebida de 2.5 ltros (a elegir).",
+        "precio": "60 MXN",
     },
 ]
-
 
 DATA_FILE = Path(__file__).parent / 'pedidos.json'
 
@@ -56,7 +62,6 @@ def save_pedidos(pedidos):
     DATA_FILE.write_text(json.dumps(pedidos, ensure_ascii=False, indent=2), encoding='utf-8')
 
 
-# Almacenamiento en memoria de pedidos confirmados (se carga desde `pedidos.json`).
 PEDIDOS_CONFIRMADOS = load_pedidos()
 
 
@@ -71,33 +76,90 @@ def pedido(paquete_id):
     if paquete is None:
         return redirect(url_for('inicio'))
 
+    if request.method == 'POST':
+        agregar_bebida = request.form.get('agregar_bebida')
+        if agregar_bebida is not None:
+            session['pending_bebida'] = {
+                'agregar_bebida': agregar_bebida == 'si',
+            }
+            return redirect(url_for('completar_pedido', paquete_id=paquete_id))
+
+    return render_template('bebida.html', paquete=paquete)
+
+
+@app.route('/pedido/<int:paquete_id>/completar', methods=['GET', 'POST'])
+def completar_pedido(paquete_id):
+    paquete = next((p for p in PAQUETES_CARNE if p["id"] == paquete_id), None)
+    if paquete is None:
+        return redirect(url_for('inicio'))
+
+    pending_bebida = session.get('pending_bebida')
+    if not pending_bebida:
+        return redirect(url_for('pedido', paquete_id=paquete_id))
+
     mensaje = None
     if request.method == 'POST':
         nombre = request.form.get('nombre', '').strip()
         metodo_pago = request.form.get('metodo_pago', '').strip()
+        telefono = request.form.get('telefono', '').strip()
+        domicilio = request.form.get('domicilio', '').strip()
 
-        if nombre and metodo_pago:
-            # Guardamos el pedido en memoria y en disco
-            pedido = {
-                'id': uuid4().hex,
+        if nombre and metodo_pago and telefono and domicilio:
+            session['pending_confirmation'] = {
                 'paquete_id': paquete['id'],
                 'paquete_nombre': paquete['nombre'],
                 'cliente': nombre,
                 'metodo_pago': metodo_pago,
+                'telefono': telefono,
+                'domicilio': domicilio,
+                'agregar_bebida': pending_bebida['agregar_bebida'],
                 'timestamp': datetime.utcnow().isoformat() + 'Z',
             }
-            PEDIDOS_CONFIRMADOS.append(pedido)
-            save_pedidos(PEDIDOS_CONFIRMADOS)
-            return redirect(url_for('ver_pedidos'))
+            session.pop('pending_bebida', None)
+            return redirect(url_for('confirmacion', paquete_id=paquete_id))
         else:
-            mensaje = "Por favor completa tu nombre y método de pago."
+            mensaje = "Por favor completa tu nombre, método de pago, teléfono y domicilio."
 
-    return render_template('pedido.html', paquete=paquete, mensaje=mensaje)
+    return render_template('pedido.html', paquete=paquete, mensaje=mensaje, action_url=url_for('completar_pedido', paquete_id=paquete_id))
+
+
+@app.route('/pedido/<int:paquete_id>/bebida', methods=['GET'])
+def bebida(paquete_id):
+    return redirect(url_for('pedido', paquete_id=paquete_id))
+
+
+@app.route('/pedido/<int:paquete_id>/confirmacion', methods=['GET', 'POST'])
+def confirmacion(paquete_id):
+    paquete = next((p for p in PAQUETES_CARNE if p['id'] == paquete_id), None)
+    if paquete is None:
+        return redirect(url_for('inicio'))
+
+    pending_confirmation = session.get('pending_confirmation')
+    if not pending_confirmation:
+        return redirect(url_for('pedido', paquete_id=paquete_id))
+
+    if request.method == 'POST':
+        pedido = {
+            'id': uuid4().hex,
+            'paquete_id': pending_confirmation['paquete_id'],
+            'paquete_nombre': pending_confirmation['paquete_nombre'],
+            'cliente': pending_confirmation['cliente'],
+            'metodo_pago': pending_confirmation['metodo_pago'],
+            'telefono': pending_confirmation.get('telefono', ''),
+            'domicilio': pending_confirmation.get('domicilio', ''),
+            'agregar_bebida': pending_confirmation['agregar_bebida'],
+            'timestamp': pending_confirmation['timestamp'],
+        }
+        PEDIDOS_CONFIRMADOS.append(pedido)
+        save_pedidos(PEDIDOS_CONFIRMADOS)
+        session.pop('pending_confirmation', None)
+        return redirect(url_for('ver_pedidos'))
+
+    return render_template('confirmacion.html', paquete=paquete, pedido=pending_confirmation)
 
 
 @app.route('/pedidos')
 def ver_pedidos():
-    # Mostramos los pedidos confirmados con filtros y orden.
     q = request.args.get('q', '').strip()
     date_from = request.args.get('date_from', '').strip()
     date_to = request.args.get('date_to', '').strip()
@@ -111,7 +173,6 @@ def ver_pedidos():
         except Exception:
             return None
 
-    # Lee desde disco para que los filtros siempre usen los datos persistidos
     items = load_pedidos()
 
     if q:
@@ -143,7 +204,6 @@ def ver_pedidos():
                 filtered.append(p)
             items = filtered
 
-    # Ordenar por timestamp
     def key_ts(p):
         ts = parse_iso(p.get('timestamp'))
         return ts or datetime.min
@@ -152,7 +212,6 @@ def ver_pedidos():
     pedidos = sorted(items, key=key_ts, reverse=reverse)
 
     return render_template('pedidos.html', pedidos=pedidos, q=q, date_from=date_from, date_to=date_to, order=order)
-
 
 
 @app.route('/pedidos/eliminar/<pedido_id>', methods=['POST'])

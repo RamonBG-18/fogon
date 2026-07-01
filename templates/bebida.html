@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fogón | Bebida</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-contenido">
+            <h1>Fogón 🔥</h1>
+            <p>Un toque extra para tu pedido.</p>
+            <a class="btn-secundario" href="{{ url_for('ver_pedidos') }}">Ver pedidos confirmados</a>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <div class="pedido-formulario">
+            <h2 class="titulo-seccion">¿Deseo agregar una bebida de 2.5 litros?</h2>
+            <p>Para tu pedido de {{ paquete.nombre }}</p>
+            <form method="post">
+                <div class="btn-opciones">
+                    <button class="btn-opcion btn-opcion-rojo" type="submit" name="agregar_bebida" value="no">No. gracias</button>
+                    <button class="btn-opcion btn-opcion-verde" type="submit" name="agregar_bebida" value="si">Por favor</button>
+                </div>
+            </form>
+            <a class="btn-secundario" href="{{ url_for('inicio') }}">← Volver al menú</a>
+            <a class="btn-secundario" href="javascript:history.back()">← Atrás</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Fogón. Prende el carbón, nosotros ponemos la carne.</p>
+    </footer>
+</body>
+</html>

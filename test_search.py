@@ -8,8 +8,14 @@ if DATA_FILE.exists():
     DATA_FILE.unlink()
 # create several pedidos
 client.post('/pedido/1', data={'nombre':'Alice','metodo_pago':'Efectivo'})
+client.post('/pedido/1/bebida', data={'agregar_bebida':'si'})
+client.post('/pedido/1/confirmacion')
 client.post('/pedido/2', data={'nombre':'Bob','metodo_pago':'Tarjeta'})
+client.post('/pedido/2/bebida', data={'agregar_bebida':'no'})
+client.post('/pedido/2/confirmacion')
 client.post('/pedido/3', data={'nombre':'Carlos','metodo_pago':'Transferencia'})
+client.post('/pedido/3/bebida', data={'agregar_bebida':'si'})
+client.post('/pedido/3/confirmacion')
 
 r_all = client.get('/pedidos')
 assert r_all.status_code == 200

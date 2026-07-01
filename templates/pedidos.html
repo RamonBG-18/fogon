@@ -37,6 +37,9 @@
                 <h3>{{ p.paquete_nombre }}</h3>
                 <p><strong>Cliente:</strong> {{ p.cliente }}</p>
                 <p><strong>Pago:</strong> {{ p.metodo_pago }}</p>
+                <p><strong>Teléfono:</strong> {{ p.get('telefono', '') }}</p>
+                <p><strong>Domicilio:</strong> {{ p.get('domicilio', '') }}</p>
+                <p><strong>Bebida 2.5 L:</strong> {% if p.get('agregar_bebida') %}Sí{% else %}No{% endif %}</p>
                 <p class="descripcion small">Ordenada: {{ p.timestamp }}</p>
                 <form method="post" action="{{ url_for('eliminar_pedido', pedido_id=p.id) }}" onsubmit="return confirm('Eliminar pedido de {{ p.cliente }}?');">
                     <button type="submit" class="btn-eliminar">Eliminar</button>

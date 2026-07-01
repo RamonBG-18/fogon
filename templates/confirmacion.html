@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fogón | Confirmación</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-contenido">
+            <h1>Fogón 🔥</h1>
+            <p>Revisa tu pedido antes de enviarlo.</p>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <div class="pedido-formulario">
+            <h2 class="titulo-seccion">Confirmar pedido</h2>
+            <div class="mensaje">
+                <p><strong>Paquete:</strong> {{ pedido.paquete_nombre }}</p>
+                <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+                <p><strong>Método de pago:</strong> {{ pedido.metodo_pago }}</p>
+                <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+                <p><strong>Domicilio:</strong> {{ pedido.domicilio }}</p>
+                <p><strong>Bebida 2.5 L:</strong> {% if pedido.agregar_bebida %}Sí{% else %}No{% endif %}</p>
+            </div>
+            <form method="post">
+                <button class="btn-pedir" type="submit">Confirmar pedido</button>
+            </form>
+            <a class="btn-secundario" href="{{ url_for('inicio') }}">← Volver al menú</a>
+            <a class="btn-secundario" href="javascript:history.back()">← Atrás</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Fogón. Prende el carbón, nosotros ponemos la carne.</p>
+    </footer>
+</body>
+</html>

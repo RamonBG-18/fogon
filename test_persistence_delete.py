@@ -10,6 +10,10 @@ if DATA_FILE.exists():
 # create pedido
 resp = client.post('/pedido/1', data={'nombre':'PersistTest','metodo_pago':'Tarjeta'})
 assert resp.status_code == 302
+resp2 = client.post('/pedido/1/bebida', data={'agregar_bebida':'no'})
+assert resp2.status_code == 302
+resp3 = client.post('/pedido/1/confirmacion')
+assert resp3.status_code == 302
 # check file exists and contains the order
 assert DATA_FILE.exists()
 data = json.loads(DATA_FILE.read_text(encoding='utf-8'))

@@ -23,7 +23,7 @@
             <div class="mensaje">{{ mensaje }}</div>
             {% endif %}
 
-            <form method="post">
+            <form method="post" action="{{ action_url }}">
                 <label for="nombre">Tu nombre</label>
                 <input type="text" id="nombre" name="nombre" placeholder="Ej. Ana López" required>
 
@@ -35,10 +35,17 @@
                     <option value="Tarjeta">Tarjeta</option>
                 </select>
 
-                <button class="btn-pedir" type="submit">Confirmar Pedido</button>
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono" name="telefono" placeholder="Ej. 5512345678" required>
+
+                <label for="domicilio">Domicilio</label>
+                <input type="text" id="domicilio" name="domicilio" placeholder="Ej. Calle 123, Colonia, Ciudad" required>
+
+                <button class="btn-pedir" type="submit">Continuar</button>
             </form>
 
             <a class="btn-secundario" href="{{ url_for('inicio') }}">← Volver al menú</a>
+            <a class="btn-secundario" href="javascript:history.back()">← Atrás</a>
         </div>
     </main>
 

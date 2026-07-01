@@ -118,6 +118,43 @@ body {
     font-weight: bold;
 }
 
+.btn-opciones {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.btn-opcion {
+    flex: 1;
+    min-width: 180px;
+    border: none;
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-opcion-rojo {
+    background-color: #c0392b;
+}
+
+.btn-opcion-rojo:hover {
+    background-color: #a5271d;
+}
+
+.btn-opcion-verde {
+    background-color: #2e8b57;
+}
+
+.btn-opcion-verde:hover {
+    background-color: #246b43;
+}
+
 .pedido-formulario {
     max-width: 600px;
     margin: 0 auto;
