@@ -28,18 +28,24 @@ PAQUETES_CARNE = [
     },
     {
         "id": 4,
+        "nombre": "2kg Pa'que Amarre de Verdad",
+        "descripcion": "2 kilos de carne asada, 2 salchichas asadas, 2 cebollas asadas, 2 papas asadas con mantequilla, tortillas y salsas a elegir.",
+        "precio": "$700 MXN",
+    },
+    {
+        "id": 5,
         "nombre": "Una Bien Servida",
         "descripcion": "4 tacos de tortilla amarilla grande, 1 papa o salchicha asada (a elegir), 1 cebolla asada, preperados a su gusto.",
         "precio": "$100 MXN",
     },
     {
-        "id": 5,
+        "id": 6,
         "nombre": "PAPON ASADO",
         "descripcion": "1 papa asada grande con mantequilla, queso y carne asada.",
         "precio": "65 MXN",
     },
     {
-        "id": 6,
+        "id": 7,
         "nombre": "PA TOMAR",
         "descripcion": "1 bebida de 2.5 ltros (a elegir).",
         "precio": "60 MXN",
