@@ -4,28 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fogón | La mejor carne asada</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    
+<body class="bg-light">
     <header class="hero">
         <div class="hero-contenido">
-            <h1>Fogón 🔥</h1>
-            <p>El mejor corte directo a tu parrilla.</p>
-            <a class="btn-secundario" href="{{ url_for('ver_pedidos') }}">Ver pedidos confirmados</a>
+            <h1 class="display-4 fw-bold">Fogón 🔥</h1>
+            <p class="lead">El mejor corte directo a tu parrilla.</p>
+            <a class="btn btn-outline-light btn-lg mt-3" href="{{ url_for('ver_pedidos') }}">Ver pedidos confirmados</a>
         </div>
     </header>
 
-    <main class="contenedor">
-        <h2 class="titulo-seccion">Paquetes Listos para Asar</h2>
-        
-        <div class="grid-paquetes">
+    <main class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="titulo-seccion">Paquetes Listos para Asar</h2>
+            <p class="text-muted">Elige tu paquete y arma tu pedido con estilo.</p>
+        </div>
+
+        <div class="row g-4">
             {% for paquete in paquetes %}
-            <div class="tarjeta">
-                <h3>{{ paquete.nombre }}</h3>
-                <p class="descripcion">{{ paquete.descripcion }}</p>
-                <p class="precio">{{ paquete.precio }}</p>
-                <a href="{{ url_for('pedido', paquete_id=paquete.id) }}" class="btn-pedir">Hacer Pedido</a>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 tarjeta">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title">{{ paquete.nombre }}</h3>
+                        <p class="descripcion">{{ paquete.descripcion }}</p>
+                        <p class="precio">{{ paquete.precio }}</p>
+                        <a href="{{ url_for('pedido', paquete_id=paquete.id) }}" class="btn btn-pedir btn-lg mt-auto">Hacer Pedido</a>
+                    </div>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -35,5 +42,6 @@
         <p>&copy; 2026 Fogón. Prende el carbón, nosotros ponemos la carne.</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

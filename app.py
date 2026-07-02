@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, session, url_for
 from datetime import datetime
 import json
+import re
 from uuid import uuid4
 from pathlib import Path
 
@@ -10,7 +11,7 @@ app.secret_key = 'fogon-secret-key'
 PAQUETES_CARNE = [
     {
         "id": 1,
-        "nombre": "Pa' que no te Atragantes",
+        "nombre": "1 kg Pa' Comer Aqui",
         "descripcion": "1kg de carne asada, 2 salchichas asadas, 2 cebollas asadas, 2 papas asadas con mantequilla, 1 refresco (2.5 lt a elegir), tortillas y salsas a elegir.",
         "precio": "$440 MXN",
     },
@@ -29,7 +30,7 @@ PAQUETES_CARNE = [
     {
         "id": 4,
         "nombre": "2kg Pa'que Amarre de Verdad",
-        "descripcion": "2 kilos de carne asada, 2 salchichas asadas, 2 cebollas asadas, 2 papas asadas con mantequilla, tortillas y salsas a elegir.",
+        "descripcion": "2 kilos de carne asada, 2 salchichas asadas, 4 cebollas asadas, 4 papas asadas con mantequilla, tortillas y salsas a elegir.",
         "precio": "$700 MXN",
     },
     {
@@ -44,15 +45,23 @@ PAQUETES_CARNE = [
         "descripcion": "1 papa asada grande con mantequilla, queso y carne asada.",
         "precio": "65 MXN",
     },
-    {
-        "id": 7,
-        "nombre": "PA TOMAR",
-        "descripcion": "1 bebida de 2.5 ltros (a elegir).",
-        "precio": "60 MXN",
-    },
 ]
 
 DATA_FILE = Path(__file__).parent / 'pedidos.json'
+
+PRECIOS_BEBIDAS = {
+    'Coca 600 ml': 30,
+    'Coca 355 ml': 25,
+    'Coca 2.5 Lt': 70,
+    'Sprite 600 ml': 30,
+    'Sprite 355 ml': 25,
+    'Dr pepper 600 ml': 30,
+    'Dr pepper 355 ml': 25,
+    'Mundet 600 ml': 30,
+    'Mundet 355 ml': 25,
+    'Fanta Naranja 600 ml': 30,
+    'Fanta Naranja 355 ml': 25,
+}
 
 
 def load_pedidos():
@@ -66,6 +75,19 @@ def load_pedidos():
 
 def save_pedidos(pedidos):
     DATA_FILE.write_text(json.dumps(pedidos, ensure_ascii=False, indent=2), encoding='utf-8')
+
+
+def get_precio_numero(precio_text):
+    if not precio_text:
+        return 0
+    match = re.search(r'(\d+)', str(precio_text))
+    return int(match.group(1)) if match else 0
+
+
+def calcular_total_pedido(paquete, bebidas):
+    precio_paquete = get_precio_numero(paquete.get('precio', '')) if paquete else 0
+    precio_bebidas = sum(PRECIOS_BEBIDAS.get(nombre, 0) * cantidad for nombre, cantidad in bebidas.items())
+    return precio_paquete + precio_bebidas
 
 
 PEDIDOS_CONFIRMADOS = load_pedidos()
@@ -82,15 +104,8 @@ def pedido(paquete_id):
     if paquete is None:
         return redirect(url_for('inicio'))
 
-    if request.method == 'POST':
-        agregar_bebida = request.form.get('agregar_bebida')
-        if agregar_bebida is not None:
-            session['pending_bebida'] = {
-                'agregar_bebida': agregar_bebida == 'si',
-            }
-            return redirect(url_for('completar_pedido', paquete_id=paquete_id))
-
-    return render_template('bebida.html', paquete=paquete)
+    session['pending_package_id'] = paquete_id
+    return redirect(url_for('seleccionar_bebidas'))
 
 
 @app.route('/pedido/<int:paquete_id>/completar', methods=['GET', 'POST'])
@@ -119,6 +134,7 @@ def completar_pedido(paquete_id):
                 'telefono': telefono,
                 'domicilio': domicilio,
                 'agregar_bebida': pending_bebida['agregar_bebida'],
+                'bebidas': session.get('bebidas_seleccionadas', {}),
                 'timestamp': datetime.utcnow().isoformat() + 'Z',
             }
             session.pop('pending_bebida', None)
@@ -132,6 +148,58 @@ def completar_pedido(paquete_id):
 @app.route('/pedido/<int:paquete_id>/bebida', methods=['GET'])
 def bebida(paquete_id):
     return redirect(url_for('pedido', paquete_id=paquete_id))
+
+
+@app.route('/bebidas', methods=['GET', 'POST'])
+def seleccionar_bebidas():
+    bebidas = [
+        {"nombre": "Coca 600 ml", "precio": "$30 MXN"},
+        {"nombre": "Coca 355 ml", "precio": "$25 MXN"},
+        {"nombre": "Coca 2.5 Lt", "precio": "$70 MXN"},
+        {"nombre": "Sprite 600 ml", "precio": "$30 MXN"},
+        {"nombre": "Sprite 355 ml", "precio": "$25 MXN"},
+        {"nombre": "Dr pepper 600 ml", "precio": "$30 MXN"},
+        {"nombre": "Dr pepper 355 ml", "precio": "$25 MXN"},
+        {"nombre": "Mundet 600 ml", "precio": "$30 MXN"},
+        {"nombre": "Mundet 355 ml", "precio": "$25 MXN"},
+        {"nombre": "Fanta Naranja 600 ml", "precio": "$30 MXN"},
+        {"nombre": "Fanta Naranja 355 ml", "precio": "$25 MXN"},
+    ]
+
+    cantidades = {}
+    if request.method == 'POST':
+        for bebida in bebidas:
+            nombre = bebida['nombre']
+            cantidad = request.form.get(f'cantidad_{nombre}', '0')
+            try:
+                cantidad_int = int(cantidad)
+            except ValueError:
+                cantidad_int = 0
+            if cantidad_int > 0:
+                cantidades[nombre] = cantidad_int
+
+        session['bebidas_seleccionadas'] = cantidades
+        session['pending_bebida'] = {
+            'agregar_bebida': bool(cantidades),
+            'bebidas': cantidades,
+        }
+        if cantidades:
+            return redirect(url_for('confirmacion_bebidas'))
+        return redirect(url_for('completar_pedido', paquete_id=session.get('pending_package_id', 1)))
+
+    return render_template('bebidas.html', bebidas=bebidas)
+
+
+@app.route('/bebidas/confirmacion', methods=['GET', 'POST'])
+def confirmacion_bebidas():
+    bebidas = session.get('bebidas_seleccionadas', {})
+    if not bebidas:
+        return redirect(url_for('completar_pedido', paquete_id=session.get('pending_package_id', 1)))
+
+    if request.method == 'POST':
+        return redirect(url_for('completar_pedido', paquete_id=session.get('pending_package_id', 1)))
+
+    return render_template('confirmacion_bebidas.html', bebidas=bebidas)
 
 
 @app.route('/pedido/<int:paquete_id>/confirmacion', methods=['GET', 'POST'])
@@ -154,6 +222,8 @@ def confirmacion(paquete_id):
             'telefono': pending_confirmation.get('telefono', ''),
             'domicilio': pending_confirmation.get('domicilio', ''),
             'agregar_bebida': pending_confirmation['agregar_bebida'],
+            'bebidas': pending_confirmation.get('bebidas', {}),
+            'estado': 'pendiente',
             'timestamp': pending_confirmation['timestamp'],
         }
         PEDIDOS_CONFIRMADOS.append(pedido)
@@ -161,10 +231,11 @@ def confirmacion(paquete_id):
         session.pop('pending_confirmation', None)
         return redirect(url_for('ver_pedidos'))
 
-    return render_template('confirmacion.html', paquete=paquete, pedido=pending_confirmation)
+    total_pedido = calcular_total_pedido(paquete, pending_confirmation.get('bebidas', {}))
+    return render_template('confirmacion.html', paquete=paquete, pedido=pending_confirmation, total_pedido=total_pedido)
 
 
-@app.route('/pedidos')
+@app.route('/pedidos', methods=['GET', 'POST'])
 def ver_pedidos():
     q = request.args.get('q', '').strip()
     date_from = request.args.get('date_from', '').strip()
@@ -178,6 +249,20 @@ def ver_pedidos():
             return datetime.fromisoformat(ts.replace('Z', ''))
         except Exception:
             return None
+
+    if request.method == 'POST':
+        pedido_id = request.form.get('pedido_id')
+        nuevo_estado = request.form.get('estado')
+        if pedido_id and nuevo_estado in {'pendiente', 'confirmado', 'entregado'}:
+            global PEDIDOS_CONFIRMADOS
+            if nuevo_estado == 'entregado':
+                PEDIDOS_CONFIRMADOS = [p for p in PEDIDOS_CONFIRMADOS if p.get('id') != pedido_id]
+            else:
+                for p in PEDIDOS_CONFIRMADOS:
+                    if p.get('id') == pedido_id:
+                        p['estado'] = nuevo_estado
+                        break
+            save_pedidos(PEDIDOS_CONFIRMADOS)
 
     items = load_pedidos()
 
@@ -216,6 +301,10 @@ def ver_pedidos():
 
     reverse = True if order != 'oldest' else False
     pedidos = sorted(items, key=key_ts, reverse=reverse)
+
+    for pedido in pedidos:
+        paquete = next((p for p in PAQUETES_CARNE if p['id'] == pedido.get('paquete_id')), None)
+        pedido['total'] = calcular_total_pedido(paquete, pedido.get('bebidas', {}))
 
     return render_template('pedidos.html', pedidos=pedidos, q=q, date_from=date_from, date_to=date_to, order=order)
 

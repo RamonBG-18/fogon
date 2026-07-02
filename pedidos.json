@@ -1,13 +1,15 @@
 [
   {
-    "id": "20dac8e0644c4e8db8babf267c5083d6",
-    "paquete_id": 2,
-    "paquete_nombre": "1kg Pa'que Amarre",
-    "cliente": "carlos",
+    "id": "5a0da4107ae148c483b46df930f794b4",
+    "paquete_id": 5,
+    "paquete_nombre": "Una Bien Servida",
+    "cliente": "dasdas",
     "metodo_pago": "Efectivo",
-    "telefono": "33333",
-    "domicilio": "eaffsdf",
-    "agregar_bebida": true,
-    "timestamp": "2026-07-01T05:14:43.109821Z"
+    "telefono": "dadasda",
+    "domicilio": "asdasdasd",
+    "agregar_bebida": false,
+    "bebidas": {},
+    "estado": "pendiente",
+    "timestamp": "2026-07-01T23:45:22.284182Z"
   }
 ]
