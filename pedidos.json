@@ -9,7 +9,22 @@
     "domicilio": "asdasdasd",
     "agregar_bebida": false,
     "bebidas": {},
-    "estado": "pendiente",
+    "estado": "confirmado",
     "timestamp": "2026-07-01T23:45:22.284182Z"
+  },
+  {
+    "id": "81d73c18627a44d8b59e2795d2e96d0a",
+    "paquete_id": 1,
+    "paquete_nombre": "1 kg Pa' Comer Aqui",
+    "cliente": "asdas",
+    "metodo_pago": "Transferencia",
+    "telefono": "asdasd",
+    "domicilio": "dasd",
+    "agregar_bebida": true,
+    "bebidas": {
+      "Coca 355 ml": 2
+    },
+    "estado": "confirmado",
+    "timestamp": "2026-07-02T00:33:57.354624Z"
   }
 ]
